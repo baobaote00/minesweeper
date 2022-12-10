@@ -16,23 +16,23 @@ class Level {
 }
 
 const level = [
-  new Level(5, 5, {
-    easy: 33,
-    medium: 50,
-    hard: 60
+  new Level(20, 15, {
+    easy: 60,
+    medium: 100,
+    hard: 150
   }
   ),
   new Level(10, 10, {
-    easy: 33,
-    medium: 50,
-    hard: 60
+    easy: 60,
+    medium: 100,
+    hard: 150
   }
   ),
   new Level(20, 20,
     {
-      easy: 100,
-      medium: 150,
-      hard: 195
+      easy: 140,
+      medium: 200,
+      hard: 240
     }
   ),
   new Level(15, 20,
@@ -87,8 +87,8 @@ function genBoom(countBoom, width, height, firstClick) {
 
   for (let index = 0; index < countBoom; index++) {
     do {
-      y = randomIndex(width);
-      x = randomIndex(height);
+      y = randomIndex(height);
+      x = randomIndex(width);
       point = { x, y };
 
       if (!checkItemInList(point, result) && checkFirstClick(firstClick, point)) {
@@ -149,19 +149,24 @@ function randomIndex(to) {
   return (Math.floor(Math.random() * to));
 }
 
+/**
+ * init resource and create a chessboard
+ * 
+ * @param level level of player select
+ */
 function init(level) {
   const { width, height } = level
   const wrap = document.querySelector(".field")
 
   const heightWindow = window.innerHeight;
-  wrap.style.height = (heightWindow * 0.68) + 'px';
   wrap.style.width = (heightWindow * 0.68) + 'px';
+  wrap.style.height = (heightWindow * 0.68) + 'px';
   wrap.innerHTML = '';
 
-  for (let i = 0; i < width; i++) {
+  for (let i = 0; i < height; i++) {
     field.push([])
     fieldSelected.push([])
-    for (let j = 0; j < height; j++) {
+    for (let j = 0; j < width; j++) {
       const element = document.createElement("div")
 
       element.classList.add("box");
@@ -182,25 +187,46 @@ function init(level) {
 init(level[1])
 // initBoom(level[0], "easy", { X: 5, Y: 5 })
 
+/**
+ * 
+ * @return location of current target
+ */
+function getLocation(event) {
+  return {
+    locationX: +event.target.getAttribute("location-x"),
+    locationY: +event.target.getAttribute("location-y")
+  }
+}
+
 function addEvent() {
   document.querySelectorAll('.box').forEach((element) => {
     element.addEventListener('click', (event) => {
-      const locationX = +event.target.getAttribute("location-x")
-      const locationY = +event.target.getAttribute("location-y")
+      const { locationX, locationY } = getLocation(event);
 
+      //check is it initialized?
       if (!checkInit) {
-        genBoom(33, 10, 10, { x: locationX, y: locationY });
+        genBoom(level[1].levelOfDifficult['easy'], level[1].height, level[1].width, { x: locationX, y: locationY });
         checkInit = true
       }
 
+      //check this location have a bomb
       if (field[locationX][locationY] == 0) {
+        //check 8 location around this location
         for (let i = -1; i < 2; i++) {
           for (let j = -1; j < 2; j++) {
+            //if location different undefined
             if (field[locationX + i] != undefined && field[locationX + i][locationY + j] != undefined) {
-              fieldSelected[locationX + i][locationY + j] = 1
+              //get html element location
               const elementLocation = document.querySelector(`[location-x='${locationX + i}'][location-y='${locationY + j}']`);
+              //if location is a flag continue
+              if (fieldSelected[locationX + i][locationY + j] == 2) continue;
+              //set location is a selected
+              fieldSelected[locationX + i][locationY + j] = 1
+              //set background element
               elementLocation.style.backgroundColor = "#000080";
+              //if around location hasn't bomb continue
               if (field[locationX + i][locationY + j] == 0) continue;
+              //display the number of bombs around location
               elementLocation.innerHTML = field[locationX + i][locationY + j]
             }
           }
@@ -208,30 +234,38 @@ function addEvent() {
       } else if (field[locationX][locationY] >= 10) {
         alert("thua")
       } else if (field[locationX][locationY] < 10) {
+        //display the number of bombs around location
         document.querySelector(`[location-x='${locationX}'][location-y='${locationY}']`).innerHTML = field[locationX][locationY]
       }
     })
 
     element.addEventListener('contextmenu', function eventRightClick(event) {
       event.preventDefault()
-      const locationX = +event.target.getAttribute("location-x")
-      const locationY = +event.target.getAttribute("location-y")
+      const { locationX, locationY } = getLocation(event);
+
 
       const elementLocation = document.querySelector(`[location-x='${locationX}'][location-y='${locationY}']`)
 
-      if (fieldSelected[locationX][locationY] == 1) return
-      if (fieldSelected[locationX][locationY] == 2) {
-        elementLocation.innerHTML = ' '
+      console.log(fieldSelected[locationX][locationY], locationX, locationY);
+      if (fieldSelected[locationX][locationY] == 0) {
+        fieldSelected[locationX][locationY] = 2
+        elementLocation.innerHTML = `<i class="fas fa-flag" style="z-index: -1;"></i>`
+        elementLocation.style.backgroundColor = "rgba(255, 255, 255, 0.212)"
+        console.log(elementLocation.innerHTML, elementLocation);
         return
       }
-      fieldSelected[locationX][locationY] = 2
-      elementLocation.innerHTML = "cờ"
+      if (fieldSelected[locationX][locationY] == 1) return;
+      if (fieldSelected[locationX][locationY] == 2) {
+        elementLocation.innerHTML = ''
+        elementLocation.style.backgroundColor = "rgba(0, 0, 0, 0)"
+        fieldSelected[locationX][locationY] = 0
+        return
+      }
     });
 
     element.addEventListener('dblclick', (event) => {
       event.preventDefault()
-      const locationX = +event.target.getAttribute("location-x")
-      const locationY = +event.target.getAttribute("location-y")
+      const { locationX, locationY } = getLocation(event);
 
       console.log(locationX, locationY);
     });
