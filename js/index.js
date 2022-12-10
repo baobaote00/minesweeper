@@ -22,7 +22,7 @@ const level = [
     hard: 150
   }
   ),
-  new Level(30, 30,
+  new Level(25, 25,
     {
       easy: 140,
       medium: 200,
@@ -178,6 +178,7 @@ function init(level) {
   }
 }
 
+//TODO create select bomb func
 init(level[1])
 // initBoom(level[0], "easy", { X: 5, Y: 5 })
 
@@ -192,6 +193,13 @@ function getLocation(event) {
   }
 }
 
+/**
+ * check 8 location around a location
+ * 
+ * @param {number} locationX location X check
+ * @param {number} locationY location Y check
+ * @returns 
+ */
 function checkAround(locationX, locationY) {
   for (let i = -1; i < 2; i++) {
     for (let j = -1; j < 2; j++) {
@@ -201,6 +209,7 @@ function checkAround(locationX, locationY) {
         const elementLocation = document.querySelector(`[location-x='${locationX + i}'][location-y='${locationY + j}']`);
         if (fieldSelected[locationX + i][locationY + j] == 2) continue;
         if (field[locationX + i][locationY + j] > 10) {
+          //TODO create lost func
           alert("thua");
           return
         }
@@ -222,6 +231,24 @@ function checkAround(locationX, locationY) {
   }
 }
 
+//TODO command
+function countFlagAroundLocation(locationX, locationY) {
+  let count = 0;
+
+  for (let i = -1; i < 2; i++) {
+    for (let j = -1; j < 2; j++) {
+      //if location different undefined
+      if (field[locationX + i] != undefined && field[locationX + i][locationY + j] != undefined) {
+        if (fieldSelected[locationX + i][locationY + j] == 2) {
+          count++
+        }
+      }
+    }
+  }
+
+  return count
+}
+
 function addEvent() {
   document.querySelectorAll('.box').forEach((element) => {
     element.addEventListener('click', (event) => {
@@ -235,12 +262,12 @@ function addEvent() {
 
       //check this location have a bomb
       if (field[locationX][locationY] == 0) {
-        //check 8 location around this location
         checkAround(locationX, locationY)
       } else if (field[locationX][locationY] >= 10) {
+        //TODO create lost func
         alert("thua")
       } else if (field[locationX][locationY] < 10) {
-        if (fieldSelected[locationX][locationY] == 1) {
+        if (fieldSelected[locationX][locationY] == 1 && countFlagAroundLocation(locationX, locationY) >= field[locationX][locationY]) {
           checkAround(locationX, locationY)
         }
         //display the number of bombs around location
