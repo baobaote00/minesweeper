@@ -22,13 +22,7 @@ const level = [
     hard: 150
   }
   ),
-  new Level(20, 15, {
-    easy: 60,
-    medium: 100,
-    hard: 150
-  }
-  ),
-  new Level(20, 20,
+  new Level(30, 20,
     {
       easy: 140,
       medium: 200,
@@ -159,8 +153,8 @@ function init(level) {
   const wrap = document.querySelector(".field")
 
   const heightWindow = window.innerHeight;
-  wrap.style.width = (heightWindow * 0.68) + 'px';
   wrap.style.height = (heightWindow * 0.68) + 'px';
+  wrap.style.width = (((((heightWindow * 0.68))/height)*(width+2))) + 'px';
   wrap.innerHTML = '';
 
   for (let i = 0; i < height; i++) {
@@ -205,7 +199,7 @@ function addEvent() {
 
       //check is it initialized?
       if (!checkInit) {
-        genBoom(level[1].levelOfDifficult['easy'], level[1].height, level[1].width, { x: locationX, y: locationY });
+        genBoom(level[1].levelOfDifficult['easy'], level[1].height,level[1].width , { x: locationX, y: locationY });
         checkInit = true
       }
 
