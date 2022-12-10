@@ -22,7 +22,7 @@ const level = [
     hard: 150
   }
   ),
-  new Level(25, 25,
+  new Level(20, 20,
     {
       easy: 140,
       medium: 200,
