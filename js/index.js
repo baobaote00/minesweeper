@@ -154,7 +154,7 @@ function init(level) {
 
   const heightWindow = window.innerHeight;
   wrap.style.height = (heightWindow * 0.68) + 'px';
-  wrap.style.width = (((((heightWindow * 0.68)) / height) * (width + 2))) + 'px';
+  wrap.style.width = (((((heightWindow * 0.68)) / height) * (width))) + 'px';
   wrap.innerHTML = '';
 
   for (let i = 0; i < height; i++) {
