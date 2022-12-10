@@ -154,7 +154,7 @@ function init(level) {
 
   const heightWindow = window.innerHeight;
   wrap.style.height = (heightWindow * 0.68) + 'px';
-  wrap.style.width = (((((heightWindow * 0.68))/height)*(width+2))) + 'px';
+  wrap.style.width = (((((heightWindow * 0.68)) / height) * (width + 2))) + 'px';
   wrap.innerHTML = '';
 
   for (let i = 0; i < height; i++) {
@@ -192,6 +192,36 @@ function getLocation(event) {
   }
 }
 
+function checkAround(locationX, locationY) {
+  for (let i = -1; i < 2; i++) {
+    for (let j = -1; j < 2; j++) {
+      //if location different undefined
+      if (field[locationX + i] != undefined && field[locationX + i][locationY + j] != undefined) {
+        //get html element location
+        const elementLocation = document.querySelector(`[location-x='${locationX + i}'][location-y='${locationY + j}']`);
+        if (fieldSelected[locationX + i][locationY + j] == 2) continue;
+        if (field[locationX + i][locationY + j] > 10) {
+          alert("thua");
+          return
+        }
+        //if location is a flag and selected continue
+        if (fieldSelected[locationX + i][locationY + j] == 1) continue;
+        //set location is a selected
+        fieldSelected[locationX + i][locationY + j] = 1
+        //set background element
+        elementLocation.style.backgroundColor = "#000080";
+        //if around location hasn't bomb continue
+        if (field[locationX + i][locationY + j] == 0) {
+          checkAround(locationX + i, locationY + j)
+          continue;
+        };
+        //display the number of bombs around location
+        elementLocation.innerHTML = field[locationX + i][locationY + j]
+      }
+    }
+  }
+}
+
 function addEvent() {
   document.querySelectorAll('.box').forEach((element) => {
     element.addEventListener('click', (event) => {
@@ -199,35 +229,20 @@ function addEvent() {
 
       //check is it initialized?
       if (!checkInit) {
-        genBoom(level[1].levelOfDifficult['easy'], level[1].height,level[1].width , { x: locationX, y: locationY });
+        genBoom(level[1].levelOfDifficult['easy'], level[1].height, level[1].width, { x: locationX, y: locationY });
         checkInit = true
       }
 
       //check this location have a bomb
       if (field[locationX][locationY] == 0) {
         //check 8 location around this location
-        for (let i = -1; i < 2; i++) {
-          for (let j = -1; j < 2; j++) {
-            //if location different undefined
-            if (field[locationX + i] != undefined && field[locationX + i][locationY + j] != undefined) {
-              //get html element location
-              const elementLocation = document.querySelector(`[location-x='${locationX + i}'][location-y='${locationY + j}']`);
-              //if location is a flag continue
-              if (fieldSelected[locationX + i][locationY + j] == 2) continue;
-              //set location is a selected
-              fieldSelected[locationX + i][locationY + j] = 1
-              //set background element
-              elementLocation.style.backgroundColor = "#000080";
-              //if around location hasn't bomb continue
-              if (field[locationX + i][locationY + j] == 0) continue;
-              //display the number of bombs around location
-              elementLocation.innerHTML = field[locationX + i][locationY + j]
-            }
-          }
-        }
+        checkAround(locationX, locationY)
       } else if (field[locationX][locationY] >= 10) {
         alert("thua")
       } else if (field[locationX][locationY] < 10) {
+        if (fieldSelected[locationX][locationY] == 1) {
+          checkAround(locationX, locationY)
+        }
         //display the number of bombs around location
         document.querySelector(`[location-x='${locationX}'][location-y='${locationY}']`).innerHTML = field[locationX][locationY]
       }
