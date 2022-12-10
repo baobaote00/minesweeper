@@ -22,7 +22,7 @@ const level = [
     hard: 150
   }
   ),
-  new Level(30, 20,
+  new Level(30, 30,
     {
       easy: 140,
       medium: 200,
@@ -154,7 +154,7 @@ function init(level) {
 
   const heightWindow = window.innerHeight;
   wrap.style.height = (heightWindow * 0.68) + 'px';
-  wrap.style.width = (((((heightWindow * 0.68)) / height) * (width))) + 'px';
+  wrap.style.width = (heightWindow * 0.68) + 'px';
   wrap.innerHTML = '';
 
   for (let i = 0; i < height; i++) {
